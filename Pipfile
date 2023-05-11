@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==3.0.1"
+flake8 = "*"
+pylint = "*"
+gunicorn = "==19.9.0"
+whitenoise = "==4.1.4"
+dj-database-url = "*"
+django-heroku = "*"
+isoweek = "*"
+python-dateutil = "*"
+coverage = "*"
+django-environ = "*"
+dj-static = "*"
+isort = "*"
+black = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"

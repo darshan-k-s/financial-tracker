@@ -1,0 +1,249 @@
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap");
+
+body {
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(45, 255, 210, 1) 100%,
+    rgba(43, 43, 43, 1) 100%
+  );
+  font-family: "Raleway", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  color: white;
+}
+
+a,
+a:link,
+a:hover,
+a:visited,
+button {
+  color: white;
+  text-decoration: none;
+}
+
+.black-font {
+  color: #212529;
+}
+
+.container {
+  margin-bottom: 30px;
+}
+
+.navbar {
+  background: rgb(227, 30, 30);
+  background: linear-gradient(
+    90deg,
+    rgba(227, 30, 30, 1) 0%,
+    rgba(255, 243, 100, 1) 100%
+  );
+  padding: 0 15px;
+}
+
+
+
+.navbar-list {
+  min-width: 100%;
+}
+
+.nav-item {
+  padding: 5px;
+}
+
+.nav-item:hover {
+  background-color: rgb(255, 140, 0);
+}
+
+form {
+  margin: auto;
+  color: white;
+}
+
+button {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.cancel-btn {
+  width: 100%;
+  text-align: center;
+}
+
+table {
+  border-radius: 10px;
+}
+
+thead {
+  color: white;
+  background-color: rgb(255, 140, 0);
+}
+
+.user-greet {
+  color: white;
+  text-align: center;
+  margin: 20px;
+}
+
+.create-expense-btn {
+  background-color: rgb(255, 140, 0);
+  min-width: 200px;
+  margin-bottom: 10px;
+  color: white !important;
+}
+
+.create-expense-btn:hover {
+  background-color: rgb(213, 117, 0);
+}
+
+.create-expense-btn > a {
+  height: 100%;
+}
+
+.create-budget-btn {
+  min-width: 200px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.instruction {
+  margin: 10px;
+}
+
+.total-expenses-container {
+  background-color: rgb(255, 140, 0);
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  width: 100%;
+  min-width: 200px;
+  font-size: 2.3rem;
+  text-align: center;
+  color: white;
+}
+
+.total-expenses-container > span {
+  font-weight: bold;
+}
+
+.budget-container {
+  background-color: rgb(199, 255, 241);
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.canvasContainer {
+  background-color: white;
+  border-radius: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.inlineCanvasContainer {
+  border-radius: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.monthly-expenses-bar-chart,
+.weekly-expenses-bar-chart,
+.total-expenses-pie-chart,
+.monthly-expenses-pie-chart {
+  background-color: white;
+  border-radius: 20px;
+}
+
+.expense-table {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+}
+
+thead,
+thead tr,
+thead tr th:first-child {
+  border-top-left-radius: 10px;
+}
+
+thead,
+thead tr,
+thead tr th:last-child {
+  border-top-right-radius: 10px;
+}
+
+.table th {
+  border: none;
+}
+
+.table-bg {
+  background-color: white;
+}
+
+.statistics-table {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.statistics-table tr td,
+.statistics-table tr th {
+  padding: 15px;
+}
+
+.statistics {
+  text-align: right;
+}
+
+.pagination {
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.pagination a {
+  display: inline-block;
+  color: black;
+  padding: 8px 16px;
+}
+
+@media screen and (min-width: 600px) {
+  form {
+    max-width: 510px;
+  }
+
+  button,
+  .cancel-btn {
+    margin-bottom: 0;
+    width: 45%;
+  }
+
+  .cancel-btn {
+    float: right;
+  }
+
+  .navbar {
+    justify-content: start !important;
+  }
+
+  .navbar-list {
+    min-width: 300px;
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    margin: auto;
+  }
+
+  .total-expenses-container {
+    max-width: 510px;
+  }
+}
