@@ -256,12 +256,13 @@ class Expense(models.Model):
     content = models.CharField(max_length=100, blank=False)
 
     CATEGORY_CHOICES = (
-        ("Bar tabs", "Bar tabs"),
+        ("Food", "Food"),
         ("Monthly bill", "Monthly bill"),
         ("Online shopping", "Online shopping"),
         ("Electronics", "Electronics"),
         ("Groceries", "Groceries"),
         ("Taxi fare", "Taxi fare"),
+        ("Housing", "Housing"),
         ("Miscellaneous", "Miscellaneous"),
     )
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, null=True)

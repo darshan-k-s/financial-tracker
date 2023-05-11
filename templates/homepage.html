@@ -48,7 +48,7 @@
 
 
     <div id="total-expenses-container" class="total-expenses-container m-auto">
-        Total expenses: <span>€{{ total_expense_amount }}</span>
+        Total expenses: <span>${{ total_expense_amount }}</span>
     </div>
 
 
@@ -77,7 +77,7 @@
         <div style="color: green; float: left; width: 50%" data-test="monthly-budget">
           Monthly budget:
           <div>
-            € {{ budget }}
+            $ {{ budget }}
             <a
               href="{% url 'expenses:update_budget' %}"
               class="font-weight-bold"
@@ -98,9 +98,9 @@
         <div style="color: green">
           Current month expenses:
           <div>
-            € {{ current_month_expenses }} {% if current_month_expenses > budget %}
+            $ {{ current_month_expenses }} {% if current_month_expenses > budget %}
             <p style="color: red; float: right">
-              (€ {{ amount_over_budget }} over budget)
+              ($ {{ amount_over_budget }} over budget)
             </p>
             {% endif %}
           </div>
@@ -156,7 +156,7 @@
           <td>{{ expense.source }}</td>
           <td>{{ expense.category }}</td>
           <td>{{ expense.content }}</td>
-          <td>€ {{ expense.amount }}</td>
+          <td>$ {{ expense.amount }}</td>
           <td class="font-weight-bold">
             <a
               href="{% url 'expenses:update' expense.pk %}"

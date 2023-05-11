@@ -64,7 +64,7 @@
             <tr>
               <td>Current month's total expenses:</td>
               <td class="statistics" data-test="stats-current-month-expenses">
-                € {{ statistics.curr_month_expense_sum }} {% if budget %} / € {{ budget }}
+                $ {{ statistics.curr_month_expense_sum }} {% if budget %} / $ {{ budget }}
 
                 {% if budget > statistics.curr_month_expense_sum %}
                 <span class="badge badge-pill badge-success"> under budget </span>
@@ -91,7 +91,7 @@
             <tr>
               <td>Last month's total expenses:</td>
               <td class="statistics" data-test="stats-last-month-expenses">
-                € {{ statistics.one_month_ago_expense_sum }}
+                $ {{ statistics.one_month_ago_expense_sum }}
               </td>
             </tr>
             <tr>
@@ -116,14 +116,14 @@
             <tr>
               <td>Monthly expense average:</td>
               <td class="statistics" data-test="stats-monthly-expense-average">
-                € {{ statistics.monthly_expense_average }}
+                $ {{ statistics.monthly_expense_average }}
               </td>
             </tr>
 
             <tr>
               <td>Daily expense average:</td>
               <td class="statistics" data-test="stats-daily-expense-average">
-                € {{ statistics.daily_expense_average }}
+                $ {{ statistics.daily_expense_average }}
               </td>
             </tr>
             <tr>
@@ -131,7 +131,7 @@
               <td class="statistics" data-test="stats-biggest-category-expense">
                 {{ statistics.biggest_category_expenditure.category }}:
                 <p class="black-font">
-                  € {{ statistics.biggest_category_expenditure.amount }}
+                  $ {{ statistics.biggest_category_expenditure.amount }}
                 </p>
               </td>
             </tr>
@@ -140,7 +140,7 @@
               <td class="statistics" data-test="stats-smallest-category-expense">
                 {{ statistics.smallest_category_expenditure.category }}:
                 <p class="black-font">
-                  € {{ statistics.smallest_category_expenditure.amount }}
+                  $ {{ statistics.smallest_category_expenditure.amount }}
                 </p>
               </td>
             </tr>
@@ -148,20 +148,20 @@
               <td>Biggest expense:</td>
               <td class="statistics" data-test="stats-biggest-expense">
                 ({{ statistics.max_expense_content}})
-                <p class="black-font">€ {{ statistics.max_expense }}</p>
+                <p class="black-font">$ {{ statistics.max_expense }}</p>
               </td>
             </tr>
             <tr>
               <td>Smallest expense:</td>
               <td class="statistics" data-test="stats-smallest-expense">
                 ({{ statistics.min_expense_content}})
-                <p class="black-font">€ {{ statistics.min_expense }}</p>
+                <p class="black-font">$ {{ statistics.min_expense }}</p>
               </td>
             </tr>
             <tr class="font-weight-bold">
               <td>Total expenses:</td>
               <td class="statistics" data-test="stats-total-expenses">
-                € {{ statistics.sum_expense }}
+                $ {{ statistics.sum_expense }}
               </td>
             </tr>
           </tbody>

@@ -129,7 +129,7 @@ const createLineChart = (data, canvasId, titleText) => {
           {
             scaleLabel: {
               display: true,
-              labelString: "(€) Amounts",
+              labelString: "($) Amounts",
             },
           },
         ],
