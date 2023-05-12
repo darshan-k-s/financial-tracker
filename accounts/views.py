@@ -1,20 +1,8 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
-
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout
 from expenses.models import Expense
-
-# Create your views here
-
-
-def logout_view(request):
-    # Delete testuser data to start from scratch when testing.
-    Expense.objects.delete_testuser_expenses(request)
-    Expense.objects.delete_testuser_budget(request)
-
-    logout(request)
-    return redirect("expenses:home")
+from django.contrib.auth.models import User
 
 
 def signup_view(request):
@@ -55,3 +43,13 @@ def signup_view(request):
 
     context = {"form": form}
     return render(request, template, context)
+
+
+
+def logout_view(request):
+    # Delete testuser data to start from scratch when testing.
+    Expense.objects.deleteTestuserExpenses(request)
+    Expense.objects.deleteTestuserBudget(request)
+
+    logout(request)
+    return redirect("expenses:home")

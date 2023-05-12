@@ -1,26 +1,22 @@
 from decimal import Decimal
-
-from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum
-from django.urls import reverse
 from django.utils import timezone
-
+from django.urls import reverse
 from expenses import utils
-
-# Create your models here.
 
 
 class ExpenseManager(models.Manager):
-    def add_testuser_expenses(self, request):
+    def addTestuserExpenses(self, request):
         if str(request.user) == "testuser1":
-            test_user_expenses = Expense.objects.filter(owner=request.user)
+            test_userExpenses = Expense.objects.filter(owner=request.user)
 
-            if not test_user_expenses:
-                Expense.objects.create_test_expenses(request.user)
+            if not test_userExpenses:
+                Expense.objects.createTestExpenses(request.user)
 
-    def create_test_expenses(self, owner, expenses=None):
+    def createTestExpenses(self, owner, expenses=None):
         if expenses:
             expenses = expenses
         else:
@@ -41,48 +37,48 @@ class ExpenseManager(models.Manager):
             )
             exp.save()
 
-    def delete_testuser_expenses(self, request):
+    def deleteTestuserExpenses(self, request):
         if str(request.user) == "testuser1" or str(request.user) == "testuser3":
 
-            test_user_expenses = Expense.objects.filter(owner=request.user)
-            for expense in test_user_expenses:
+            test_userExpenses = Expense.objects.filter(owner=request.user)
+            for expense in test_userExpenses:
                 expense.delete()
 
-    def delete_testuser_budget(self, request):
+    def deleteTestuserBudget(self, request):
         if str(request.user) == "testuser1" or str(request.user) == "testuser3":
             test_user_budget = Budget.objects.all()
             test_user_budget.delete()
 
-    def get_user_expenses(self, owner):
+    def getUserExpenses(self, owner):
         return Expense.objects.filter(owner=owner)
 
-    def get_total_expenses(self, owner):
-        total_expenses = self.get_user_expenses(owner).aggregate(amount=Sum("amount"))[
+    def getTotalExpenses(self, owner):
+        total_expenses = self.getUserExpenses(owner).aggregate(amount=Sum("amount"))[
             "amount"
         ]
         return utils.safely_round(total_expenses)
 
-    def get_max_expense(self, owner):
+    def getMaxExpense(self, owner):
         """Returns the user's highest."""
-        max_expense = self.get_user_expenses(owner).order_by("amount").last()
+        max_expense = self.getUserExpenses(owner).order_by("amount").last()
         return max_expense
 
-    def get_max_expense_content(self, owner):
+    def getMaxExpenseContent(self, owner):
         """Returns the content of the user's highest expense."""
-        max_expense = self.get_user_expenses(owner).order_by("amount").last()
+        max_expense = self.getUserExpenses(owner).order_by("amount").last()
         return max_expense.content if max_expense else "There are no expenses yet."
 
-    def get_min_expense(self, owner):
+    def getMinExpense(self, owner):
         """Returns the user's lowest expense."""
-        min_expense = self.get_user_expenses(owner).order_by("amount").first()
+        min_expense = self.getUserExpenses(owner).order_by("amount").first()
         return min_expense
 
-    def get_min_expense_content(self, owner):
+    def getMinExpenseContent(self, owner):
         """Returns the content of the user's lowest expense."""
-        min_expense = self.get_user_expenses(owner).order_by("amount").first()
+        min_expense = self.getUserExpenses(owner).order_by("amount").first()
         return min_expense.content if min_expense else "There are no expenses yet."
 
-    def get_weekly_expense_sum(self, owner, week_timedelta_num=0):
+    def getWeeklyExpenseSum(self, owner, week_timedelta_num=0):
         """
         Returns the total expenses for the given week.
 
@@ -91,13 +87,13 @@ class ExpenseManager(models.Manager):
         week_timedelta_num=-1(last week), and so on.
         """
         current_week_num = utils.get_week_iso_num(week_timedelta_num)
-        weekly_expenses = self.get_user_expenses(owner).filter(
+        weekly_expenses = self.getUserExpenses(owner).filter(
             date__week=current_week_num
         )
         weekly_expenses = weekly_expenses.aggregate(amount=Sum("amount"))["amount"]
         return utils.safely_round(weekly_expenses)
 
-    def get_monthly_expense_sum(self, owner, month_timedelta_num=0):
+    def getMonthlyExpenseSum(self, owner, month_timedelta_num=0):
         """
         Returns the total expenses for the given month.
 
@@ -108,19 +104,19 @@ class ExpenseManager(models.Manager):
         current_month_num = utils.get_month_num(month_timedelta_num)
         current_month_num = 12 if current_month_num < 1 else current_month_num
 
-        monthly_expenses = self.get_user_expenses(owner).filter(
+        monthly_expenses = self.getUserExpenses(owner).filter(
             date__month=current_month_num
         )
         monthly_expenses = monthly_expenses.aggregate(amount=Sum("amount"))["amount"]
         return utils.safely_round(monthly_expenses)
 
-    def get_monthly_expense_average(self, owner):
+    def getMonthlyExpenseAverage(self, owner):
         months = utils.get_months_list()
-        monthly_expenses_data = []
+        monthlyExpensesData = []
 
         for month in months:
             month_num = months.index(month) + 1
-            monthly_expenses = self.get_user_expenses(owner).filter(
+            monthly_expenses = self.getUserExpenses(owner).filter(
                 date__month=month_num
             )
 
@@ -128,36 +124,36 @@ class ExpenseManager(models.Manager):
                 monthly_expenses_sum = round(
                     monthly_expenses.aggregate(amount=Sum("amount"))["amount"], 2
                 )
-                monthly_expenses_data.append(monthly_expenses_sum)
+                monthlyExpensesData.append(monthly_expenses_sum)
 
-        if monthly_expenses_data:
+        if monthlyExpensesData:
             monthly_expense_average = round(
-                sum(monthly_expenses_data) / len(monthly_expenses_data), 2
+                sum(monthlyExpensesData) / len(monthlyExpensesData), 2
             )
         else:
             monthly_expense_average = 0
         return monthly_expense_average
 
-    def get_expense_amounts_by_category(self, owner):
-        expense_amounts_by_category = {}
-        for exp in self.get_user_expenses(owner):
-            if exp.category not in expense_amounts_by_category:
-                expense_amounts_by_category[exp.category] = float(exp.amount)
+    def getExpenseAmountsByCategory(self, owner):
+        expenseAmountsByCategory = {}
+        for exp in self.getUserExpenses(owner):
+            if exp.category not in expenseAmountsByCategory:
+                expenseAmountsByCategory[exp.category] = float(exp.amount)
             else:
-                expense_amounts_by_category[exp.category] += float(exp.amount)
-        return expense_amounts_by_category
+                expenseAmountsByCategory[exp.category] += float(exp.amount)
+        return expenseAmountsByCategory
 
-    def get_biggest_category_expenditure(self, owner):
+    def getBiggestCategoryExpenditure(self, owner):
         """
         Returns a dictionary with both the amount and the category
         of the user's highest expense.
         """
-        expense_amounts_by_category = self.get_expense_amounts_by_category(owner)
-        if expense_amounts_by_category:
-            biggest_category_expense = max(expense_amounts_by_category.values())
+        expenseAmountsByCategory = self.getExpenseAmountsByCategory(owner)
+        if expenseAmountsByCategory:
+            biggest_category_expense = max(expenseAmountsByCategory.values())
             biggest_category = [
                 cat
-                for (cat, amount) in expense_amounts_by_category.items()
+                for (cat, amount) in expenseAmountsByCategory.items()
                 if amount == biggest_category_expense
             ][0]
             biggest_category_expense = round(biggest_category_expense, 2)
@@ -167,17 +163,17 @@ class ExpenseManager(models.Manager):
 
         return {"category": biggest_category, "amount": biggest_category_expense}
 
-    def get_smallest_category_expenditure(self, owner):
+    def getSmallestCategoryExpenditure(self, owner):
         """
         Returns a dictionary with both the amount and the category
         of the user's lowest expense.
         """
-        expense_amounts_by_category = self.get_expense_amounts_by_category(owner)
-        if expense_amounts_by_category:
-            smallest_category_expense = min(expense_amounts_by_category.values())
+        expenseAmountsByCategory = self.getExpenseAmountsByCategory(owner)
+        if expenseAmountsByCategory:
+            smallest_category_expense = min(expenseAmountsByCategory.values())
             smallest_category = [
                 cat
-                for (cat, amount) in expense_amounts_by_category.items()
+                for (cat, amount) in expenseAmountsByCategory.items()
                 if amount == smallest_category_expense
             ][0]
             smallest_category_expense = round(smallest_category_expense, 2)
@@ -187,19 +183,19 @@ class ExpenseManager(models.Manager):
 
         return {"category": smallest_category, "amount": smallest_category_expense}
 
-    def get_curr_and_last_month_expenses_percentage_diff(self, owner):
+    def getCurrAndLastMonthExpensesPercentageDiff(self, owner):
         """
         Returns the percentage difference between the current month
         and the last months expenses.
         """
-        curr_month_expenses = self.get_monthly_expense_sum(owner)
-        one_month_ago_expenses = self.get_monthly_expense_sum(owner, -1)
+        curr_month_expenses = self.getMonthlyExpenseSum(owner)
+        one_month_ago_expenses = self.getMonthlyExpenseSum(owner, -1)
         percentage_diff = utils.get_percentage_diff(
             curr_month_expenses, one_month_ago_expenses
         )
         return percentage_diff
 
-    def get_daily_expense_average(self, owner):
+    def getDailyExpenseAverage(self, owner):
         expenses = Expense.objects.filter(owner=owner).values("date", "amount")
 
         date_and_amount_data = {}
@@ -218,30 +214,30 @@ class ExpenseManager(models.Manager):
             daily_expense_average = 0
         return daily_expense_average
 
-    def get_statistics(self, owner):
+    def getStatistics(self, owner):
         statistics = {
-            "sum_expense": self.get_total_expenses(owner),
-            "max_expense": self.get_max_expense(owner),
-            "max_expense_content": self.get_max_expense_content(owner),
-            "min_expense": self.get_min_expense(owner),
-            "min_expense_content": self.get_min_expense_content(owner),
-            "biggest_category_expenditure": self.get_biggest_category_expenditure(
+            "sum_expense": self.getTotalExpenses(owner),
+            "max_expense": self.getMaxExpense(owner),
+            "max_expense_content": self.getMaxExpenseContent(owner),
+            "min_expense": self.getMinExpense(owner),
+            "min_expense_content": self.getMinExpenseContent(owner),
+            "biggest_category_expenditure": self.getBiggestCategoryExpenditure(
                 owner
             ),
-            "smallest_category_expenditure": self.get_smallest_category_expenditure(
+            "smallest_category_expenditure": self.getSmallestCategoryExpenditure(
                 owner
             ),
-            "monthly_percentage_diff": self.get_curr_and_last_month_expenses_percentage_diff(
+            "monthly_percentage_diff": self.getCurrAndLastMonthExpensesPercentageDiff(
                 owner
             ),
-            "monthly_expense_average": self.get_monthly_expense_average(owner),
-            "daily_expense_average": self.get_daily_expense_average(owner),
-            "curr_month_expense_sum": self.get_monthly_expense_sum(owner),
-            "one_month_ago_expense_sum": self.get_monthly_expense_sum(owner, -1),
+            "monthly_expense_average": self.getMonthlyExpenseAverage(owner),
+            "daily_expense_average": self.getDailyExpenseAverage(owner),
+            "curr_month_expense_sum": self.getMonthlyExpenseSum(owner),
+            "one_month_ago_expense_sum": self.getMonthlyExpenseSum(owner, -1),
         }
         return statistics
 
-    def get_budget(self, owner):
+    def getBudget(self, owner):
         budget = Budget.objects.filter(owner=owner).first()
         return budget.amount if budget else 0
 
@@ -261,7 +257,7 @@ class Expense(models.Model):
         ("Online shopping", "Online shopping"),
         ("Electronics", "Electronics"),
         ("Groceries", "Groceries"),
-        ("Taxi fare", "Taxi fare"),
+        ("Transport", "Transport"),
         ("Housing", "Housing"),
         ("Miscellaneous", "Miscellaneous"),
     )
@@ -287,7 +283,7 @@ class Budget(models.Model):
     amount = models.DecimalField(
         default=10,
         decimal_places=2,
-        max_digits=5,
+        max_digits=10,
         validators=[MinValueValidator(Decimal("0.01"))],
     )
     owner = models.OneToOneField(User, on_delete=models.CASCADE)

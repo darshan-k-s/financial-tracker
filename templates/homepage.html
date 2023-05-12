@@ -1,6 +1,8 @@
 {% extends 'base.html' %} 
 
-{% block title %}Expenses{% endblock title %} 
+{% block title %}
+Expenses
+{% endblock title %} 
 
 {% block content %}
 
@@ -22,7 +24,7 @@
     <a
       id="create-budget-btn"
       class="create-budget-btn btn btn-primary btn-lg font-weight-bold"
-      href="{% url 'expenses:create_budget' %}"
+      href="{% url 'expenses:createBudget' %}"
       data-test="create-budget"
       >+Add Monthly Budget</a
     >
@@ -30,8 +32,6 @@
 
 {% endif %} 
 </div>
-
-
 
 {% if not expenses %}
 
@@ -46,16 +46,13 @@
 
 {% if expenses %}
 
-
     <div id="total-expenses-container" class="total-expenses-container m-auto">
-        Total expenses: <span>${{ total_expense_amount }}</span>
+        Total expenses: <span>₹{{ totalExpenseAmount }}</span>
     </div>
-
 
 {% endif %}
 
 {% if budget %}
-
 <div class="col-md-9 mx-auto">
       <div
         id="budget-container"
@@ -65,7 +62,7 @@
       >
         <div class="progress">
           <div
-            class="progress-bar {% if current_month_expenses > budget %} bg-danger {% else %} bg-success {% endif %}"
+            class="progress-bar {% if currentMonthExpenses > budget %} bg-danger {% else %} bg-success {% endif %}"
             role="progressbar"
             style="width: {{ expenses_vs_budget_percentage_diff }}%"
             aria-valuenow="50"
@@ -77,16 +74,16 @@
         <div style="color: green; float: left; width: 50%" data-test="monthly-budget">
           Monthly budget:
           <div>
-            $ {{ budget }}
+            ₹ {{ budget }}
             <a
-              href="{% url 'expenses:update_budget' %}"
+              href="{% url 'expenses:updateBudget' %}"
               class="font-weight-bold"
               data-test="update-budget"
             >
               <span class="badge-pill badge-warning">✎</span>
             </a>
             <a
-              href="{% url 'expenses:delete_budget' %}"
+              href="{% url 'expenses:deleteBudget' %}"
               class="font-weight-bold"
               data-test="delete-budget"
             >
@@ -98,9 +95,9 @@
         <div style="color: green">
           Current month expenses:
           <div>
-            $ {{ current_month_expenses }} {% if current_month_expenses > budget %}
+            ₹ {{ currentMonthExpenses }} {% if currentMonthExpenses > budget %}
             <p style="color: red; float: right">
-              ($ {{ amount_over_budget }} over budget)
+              (₹ {{ amount_over_budget }} over budget)
             </p>
             {% endif %}
           </div>
@@ -111,7 +108,6 @@
   {% endif %}
 
 
-
 {% if num_expenses < 2 %}
 
   <h5 class="text-center instruction">
@@ -119,22 +115,20 @@
   </h5>
 
 {% else %}
-
   <!-- Line chart code -->
   <div class="canvasContainer col-md-12">
     <canvas id="total-expenses-line-chart" class="total-expenses-line-chart"
     data-test="total-expenses-line-chart"></canvas>
   </div>
-
   <script>
     document.getElementById("create-expense-btn").focus();
     createCharts("homepage");
   </script>
-
 {% endif %} 
 
-{% if expenses %}
 
+
+{% if expenses %}
   <div id="expense-table" class="expense-table" data-test="expense-table">
     <table class="table table-striped table-hover table-bg">
       <thead>
@@ -156,7 +150,7 @@
           <td>{{ expense.source }}</td>
           <td>{{ expense.category }}</td>
           <td>{{ expense.content }}</td>
-          <td>$ {{ expense.amount }}</td>
+          <td>₹ {{ expense.amount }}</td>
           <td class="font-weight-bold">
             <a
               href="{% url 'expenses:update' expense.pk %}"
@@ -178,11 +172,9 @@
       </tbody>
     </table>
   </div>
-
 {% endif %} 
 
 {% if expenses.has_other_pages %}
-
   <nav id="pagination-container">
     <ul class="pagination" data-test="pagination">
 
@@ -207,18 +199,14 @@
         </li>
 
       {% endif %} 
-      
       {% for i in expenses.paginator.page_range %}
 
-      <!-- show me pages that are no more than 5 pages below or above the current page. -->
       {% if i > pagination_range_down and i < pagination_range_up %}
 
         {% if expenses.number == i %}
-
           <li class="active page-link page-item" data-test="page-link-{{i}}">
             {{ i }}
           </li>
-
         {% else %}
 
           <li class="page-item">
@@ -232,7 +220,6 @@
         {% endfor %} 
         
         {% if expenses.has_next %}
-
           <li class="page-item" data-test="next-button">
             <a class="page-link" href="?page={{ expenses.next_page_number }}">Next</a>
           </li>
@@ -248,11 +235,8 @@
           <li class="disabled page-item" data-test="last-button">
             <a class="page-link" href="">Last</a>
           </li>
-          
         {% endif %}
     </ul>
   </nav>
-
 {% endif %} 
-
 {% endblock content %}

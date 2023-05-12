@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
 ]
 
-CURRENCY = "$"
+CURRENCY = "₹"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -151,7 +151,7 @@ LOGIN_URL = "accounts:login"
 
 
 # Activate Django-Heroku.
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 # options = DATABASES['default'].get('OPTIONS', {})
 # options.pop('sslmode', None)

@@ -1,11 +1,11 @@
-from django import forms
-
 from .models import Budget, Expense
-
+from django import forms
 
 class ExpenseForm(forms.ModelForm):
     class Meta:
+
         model = Expense
+        
         fields = ("amount", "content", "category", "source", "date", "owner")
         exclude = ["owner"]
 
@@ -21,6 +21,7 @@ class ExpenseForm(forms.ModelForm):
 class BudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
+        
         fields = ("amount", "owner")
         exclude = ["owner"]
 

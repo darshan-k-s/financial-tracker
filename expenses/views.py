@@ -1,33 +1,39 @@
-import json
-
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
-
 from expenses import utils
 
-from .forms import BudgetForm, ExpenseForm
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, redirect, render
+from django.http import JsonResponse
+import json
 from .models import Budget, Expense
+from .forms import BudgetForm, ExpenseForm
 
-# Create your views here.
+
+@login_required
+def charts(request):
+    template = "charts.html"
+    
+    expenses = Expense.objects.filter(owner=request.user)
+    budget = Expense.objects.getBudget(request.user)
+    statistics = Expense.objects.getStatistics(request.user)
+
+    context = {"expenses": expenses, "budget": budget, "statistics": statistics}
+    return render(request, template, context)
 
 
 @login_required
 def homepage(request):
-    # Add expenses to testuser to showcase expense and statistics tables
-    # and charts.
-    Expense.objects.add_testuser_expenses(request)
+    Expense.objects.addTestuserExpenses(request)
 
     template = "homepage.html"
-    user_expenses = Expense.objects.filter(owner=request.user).order_by("-date")
+    userExpenses = Expense.objects.filter(owner=request.user).order_by("-date")
 
-    total_expense_amount = Expense.objects.get_total_expenses(owner=request.user)
-    budget = Expense.objects.get_budget(owner=request.user)
+    totalExpenseAmount = Expense.objects.getTotalExpenses(owner=request.user)
+    budget = Expense.objects.getBudget(owner=request.user)
 
     page = request.GET.get("page", 1)
-    paginator = Paginator(user_expenses, 15)
+    paginator = Paginator(userExpenses, 15)
 
     try:
         expenses = paginator.page(page)
@@ -41,24 +47,24 @@ def homepage(request):
 
     context = {
         "expenses": expenses,
-        "total_expense_amount": total_expense_amount,
+        "totalExpenseAmount": totalExpenseAmount,
         "budget": budget,
-        "num_expenses": len(user_expenses),
+        "num_expenses": len(userExpenses),
         "num_pages": paginator.num_pages,
         "pagination_range_down": pagination_range_down,
         "pagination_range_up": pagination_range_up,
     }
 
     if budget:
-        current_month_expenses = Expense.objects.get_monthly_expense_sum(
+        currentMonthExpenses = Expense.objects.getMonthlyExpenseSum(
             owner=request.user
         )
         expenses_vs_budget_percentage_diff = (
-            (current_month_expenses / budget * 100) if budget else 0
+            (currentMonthExpenses / budget * 100) if budget else 0
         )
-        amount_over_budget = current_month_expenses - budget
+        amount_over_budget = currentMonthExpenses - budget
 
-        context["current_month_expenses"] = current_month_expenses
+        context["currentMonthExpenses"] = currentMonthExpenses
         context[
             "expenses_vs_budget_percentage_diff"
         ] = expenses_vs_budget_percentage_diff
@@ -68,48 +74,8 @@ def homepage(request):
 
 
 @login_required
-def charts(request):
-    template = "charts.html"
-    expenses = Expense.objects.filter(owner=request.user)
-    budget = Expense.objects.get_budget(request.user)
-    statistics = Expense.objects.get_statistics(request.user)
-
-    context = {"expenses": expenses, "budget": budget, "statistics": statistics}
-    return render(request, template, context)
-
-
-@login_required
-def create_expense(request):
-    template = "create_expense.html"
-
-    if request.method != "POST":
-        # No data submitted; create a blank form.
-        form = ExpenseForm()
-    else:
-        # POST data submitted; process data.
-        form = ExpenseForm(request.POST)
-        if form.is_valid():
-            new_expense = form.save(commit=False)
-            new_expense.owner = request.user
-            new_expense.save()
-            return redirect("expenses:home")
-
-    context = locals()
-    return render(request, template, context)
-
-
-@login_required
-def view_expense(request, pk):
-    template = "view_expense.html"
-    expense = get_object_or_404(Expense, pk=pk)
-    context = locals()
-
-    return render(request, template, context)
-
-
-@login_required
-def update_expense(request, pk):
-    template = "update_expense.html"
+def updateExpense(request, pk):
+    template = "updateExpense.html"
     expense = get_object_or_404(Expense, pk=pk)
 
     if request.method != "POST":
@@ -126,8 +92,37 @@ def update_expense(request, pk):
 
 
 @login_required
-def delete_expense(request, pk):
-    template = "delete_expense.html"
+def createExpense(request):
+    template = "createExpense.html"
+
+    if request.method != "POST":
+        # No data submitted; create a blank form.
+        form = ExpenseForm()
+    else:
+        # POST data submitted; process data.
+        form = ExpenseForm(request.POST)
+        if form.is_valid():
+            newExpense = form.save(commit=False)
+            newExpense.owner = request.user
+            newExpense.save()
+            return redirect("expenses:home")
+
+    context = locals()
+    return render(request, template, context)
+
+
+@login_required
+def viewExpense(request, pk):
+    template = "viewExpense.html"
+    expense = get_object_or_404(Expense, pk=pk)
+    context = locals()
+
+    return render(request, template, context)
+
+
+@login_required
+def deleteExpense(request, pk):
+    template = "deleteExpense.html"
     expense = get_object_or_404(Expense, pk=pk)
 
     if request.method == "POST":
@@ -138,28 +133,8 @@ def delete_expense(request, pk):
 
 
 @login_required
-def create_budget(request):
-    template = "create_budget.html"
-
-    if request.method != "POST":
-        # No data submitted; create a blank form.
-        form = BudgetForm()
-    else:
-        # POST data submitted; process data.
-        form = BudgetForm(request.POST)
-        if form.is_valid():
-            new_budget = form.save(commit=False)
-            new_budget.owner = request.user
-            new_budget.save()
-            return redirect("expenses:home")
-
-    context = locals()
-    return render(request, template, context)
-
-
-@login_required
-def update_budget(request):
-    template = "update_budget.html"
+def updateBudget(request):
+    template = "updateBudget.html"
     budget = get_object_or_404(Budget, owner=request.user)
 
     if request.method != "POST":
@@ -178,8 +153,30 @@ def update_budget(request):
 
 
 @login_required
-def delete_budget(request):
-    template = "delete_budget.html"
+def createBudget(request):
+    template = "createBudget.html"
+
+    if request.method != "POST":
+        # No data submitted; create a blank form.
+        form = BudgetForm()
+    else:
+        # POST data submitted; process data.
+        form = BudgetForm(request.POST)
+        if form.is_valid():
+            new_budget = form.save(commit=False)
+            new_budget.owner = request.user
+            new_budget.save()
+            return redirect("expenses:home")
+
+    context = locals()
+    return render(request, template, context)
+
+
+
+
+@login_required
+def deleteBudget(request):
+    template = "deleteBudget.html"
     budget = get_object_or_404(Budget, owner=request.user)
 
     if request.method == "POST":
@@ -190,23 +187,11 @@ def delete_budget(request):
 
 
 @login_required
-def view_404(request, exception):
-    template = "errors/404.html"
-    return render(request, template, {})
-
-
-@login_required
-def view_500(request):
-    template = "errors/500.html"
-    return render(request, template, {})
-
-
-@login_required
 def line_chart_data(request):
-    user_expenses = Expense.objects.filter(owner=request.user)
+    userExpenses = Expense.objects.filter(owner=request.user)
 
     page = request.GET.get("page", 1)
-    paginator = Paginator(user_expenses, 15)
+    paginator = Paginator(userExpenses, 15)
 
     try:
         expenses = paginator.page(page)
@@ -232,12 +217,27 @@ def line_chart_data(request):
     return JsonResponse(chart_data)
 
 
+
+@login_required
+def view_404(request, exception):
+    template = "errors/404.html"
+    return render(request, template, {})
+
+
+@login_required
+def view_500(request):
+    template = "errors/500.html"
+    return render(request, template, {})
+
+
+
+
 @login_required
 def total_expenses_pie_chart_data(request):
-    user_expenses = Expense.objects.filter(owner=request.user)
+    userExpenses = Expense.objects.filter(owner=request.user)
 
     chart_data = {}
-    for exp in user_expenses:
+    for exp in userExpenses:
         if exp.category not in chart_data:
             chart_data[exp.category] = float(exp.amount)
         else:
@@ -249,11 +249,30 @@ def total_expenses_pie_chart_data(request):
 
 
 @login_required
+def expenses_by_week_bar_chart_data(request):
+    weeks = ["current week", "last week", "2 weeks ago", "3 weeks ago"]
+    weeks.reverse()
+
+    expenses = [
+        Expense.objects.getWeeklyExpenseSum(request.user),
+        Expense.objects.getWeeklyExpenseSum(request.user, -1),
+        Expense.objects.getWeeklyExpenseSum(request.user, -2),
+        Expense.objects.getWeeklyExpenseSum(request.user, -3),
+    ]
+    expenses.reverse()
+
+    chart_data = {}
+    for i, week in enumerate(weeks):
+        chart_data[week] = expenses[i]
+    return JsonResponse(chart_data)
+
+
+@login_required
 def monthly_expenses_pie_chart_data(request):
-    user_expenses = Expense.objects.filter(owner=request.user)
+    userExpenses = Expense.objects.filter(owner=request.user)
 
     month_num = utils.get_month_num()
-    monthly_expenses = user_expenses.filter(date__month=month_num)
+    monthly_expenses = userExpenses.filter(date__month=month_num)
 
     chart_data = {}
     for exp in monthly_expenses:
@@ -269,49 +288,18 @@ def monthly_expenses_pie_chart_data(request):
 
 @login_required
 def expenses_by_month_bar_chart_data(request):
-    user_expenses = Expense.objects.filter(owner=request.user)
+    userExpenses = Expense.objects.filter(owner=request.user)
     current_year = utils.get_year_num()
     last_year = current_year - 1
 
     last_year_month_expenses = utils.get_yearly_month_expense_data(
-        last_year, user_expenses
+        last_year, userExpenses
     )
     current_year_month_expenses = utils.get_yearly_month_expense_data(
-        current_year, user_expenses
+        current_year, userExpenses
     )
     chart_data = {**last_year_month_expenses, **current_year_month_expenses}
     return JsonResponse(chart_data)
-
-
-@login_required
-def expenses_by_week_bar_chart_data(request):
-    weeks = ["current week", "last week", "2 weeks ago", "3 weeks ago"]
-    weeks.reverse()
-
-    expenses = [
-        Expense.objects.get_weekly_expense_sum(request.user),
-        Expense.objects.get_weekly_expense_sum(request.user, -1),
-        Expense.objects.get_weekly_expense_sum(request.user, -2),
-        Expense.objects.get_weekly_expense_sum(request.user, -3),
-    ]
-    expenses.reverse()
-
-    chart_data = {}
-    for i, week in enumerate(weeks):
-        chart_data[week] = expenses[i]
-    return JsonResponse(chart_data)
-
-
-@login_required
-def add_testuser_data(request):
-    user = str(request.user)
-    if user == "testuser1" or user == "testuser3":
-        req_post_dict = dict(request.POST)
-        expenses_str_dict = req_post_dict["expenses"][0]
-        expenses = json.loads(expenses_str_dict)
-
-        Expense.objects.create_test_expenses(request.user, expenses)
-        return redirect("expenses:home")
 
 
 @login_required
@@ -320,8 +308,8 @@ def delete_testuser_data(request):
     user = str(request.user)
 
     if user == "testuser1" or user == "testuser3":
-        Expense.objects.delete_testuser_expenses(request)
-        Expense.objects.delete_testuser_budget(request)
+        Expense.objects.deleteTestuserExpenses(request)
+        Expense.objects.deleteTestuserBudget(request)
 
         testusers_to_delete = User.objects.exclude(username="testuser1").exclude(
             username="testuser3"
@@ -334,3 +322,17 @@ def delete_testuser_data(request):
             "Not allowed to delete the expenses or budget of any user other than testuser1 and testuser3"
         )
         return redirect("expenses:home")
+
+
+@login_required
+def addTestuserData(request):
+    user = str(request.user)
+    if user == "testuser1" or user == "testuser3":
+        req_post_dict = dict(request.POST)
+        expenses_str_dict = req_post_dict["expenses"][0]
+        expenses = json.loads(expenses_str_dict)
+
+        Expense.objects.createTestExpenses(request.user, expenses)
+        return redirect("expenses:home")
+
+

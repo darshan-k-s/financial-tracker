@@ -2,8 +2,10 @@
 {% block content %}
 
 <div class="form-group font-weight-bold">
+  
   <form method="post" action="{% url 'accounts:signup' %}">
     {% csrf_token %}
+    
     <p>
       Username:
       <input
@@ -23,7 +25,6 @@
         only.</span
       >
     </p>
-
     <p>
       Password:
       <input
@@ -50,9 +51,8 @@
         </ul>
       </span>
     </p>
-
     <p>
-      Password confirmation:
+      Confirm Password:
       <input
         type="password"
         name="password2"
@@ -66,12 +66,10 @@
         >Enter the same password as before, for verification.</span
       >
     </p>
-
-    <button type="submit" class="btn btn-primary" data-test="signup">
-      Sign up
-    </button>
+    <button type="submit" class="btn btn-primary" data-test="signup"> Sign up </button>
+  
     <input type="hidden" name="text" value="{% url 'expenses:home' %}" />
+  
   </form>
 </div>
-
 {% endblock content %}

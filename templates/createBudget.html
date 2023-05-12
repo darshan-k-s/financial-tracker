@@ -1,29 +1,38 @@
 {% extends 'base.html' %}
-{% block title %}Add Expense{% endblock %}
+
+{% block title %}
+Add Budget
+{% endblock %}
+
 {% block content %}
 
 <div class="form-group">
+
   <form
-    class="expense-form font-weight-bold"
+    class="budget-form font-weight-bold"
     method="post"
-    data-test="create-expense-form"
+    data-test="create-budget-form"
   >
-    {% csrf_token %} {{ form.as_p }}
-    <button
+
+  {% csrf_token %} 
+  {{ form.as_p }}
+
+  <button
       type="submit"
       class="btn btn-primary"
-      data-test="create-expense-save"
+      data-test="create-budget-save"
     >
       Save
     </button>
 
+
     <a
       class="btn btn-secondary cancel-btn"
       href="{% url 'expenses:home' %}"
-      data-test="create-expense-cancel"
+      data-test="create-budget-cancel"
+      >Cancel</a
     >
-      Cancel
-    </a>
+
   </form>
 </div>
 {% endblock content %}

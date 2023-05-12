@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
+
 {% block content %}
+
 {% if form.errors %}
-
-<p>Your username and password didn't match. Please try again.</p>
-
+  <p>Username and password don't match. Please try again.</p>
 {% endif %}
+
 
 <div class="form-group font-weight-bold">
   <form
@@ -12,7 +13,9 @@
     action="{% url 'accounts:login' %}"
     data-test="login-form"
   >
+
     {% csrf_token %}
+  
     <p>
       Username:
       <input
@@ -33,11 +36,15 @@
         data-test="password"
       />
     </p>
+    
     <button name="submit" class="btn btn-primary" data-test="login">
       Log In
     </button>
+
     <input type="hidden" name="text" value="{% url 'expenses:home' %}" />
+  
   </form>
 </div>
+
 
 {% endblock content %}
