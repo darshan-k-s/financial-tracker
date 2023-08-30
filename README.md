@@ -4,6 +4,7 @@ Expense Tracker will help you track expense, show charts and statistics about yo
 
 ---
 
+![Homepage](https://github.com/darshan-k-s/financial-tracker/blob/acd56dea015565551678c26999ead5ff8ae95e47/demo/homePage.jpeg)
 
 ## Installation
 
@@ -43,6 +44,10 @@ The site will be live at http://localhost:8000/
 - Form validation.
 - Authentication.
 - Pagination.
+
+---
+
+![Statistics page](https://github.com/darshan-k-s/financial-tracker/blob/acd56dea015565551678c26999ead5ff8ae95e47/demo/statsPage.jpeg)
 
 ---
 
